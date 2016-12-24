@@ -45,21 +45,21 @@ int freestrarray(char ***str, int num)
 }
 
 //1表示是，0表示否，-1表示出错
-int nextIsStr(const char * p, char * splitStr, int  len)
-{
-	if (p == NULL || splitStr == NULL)
-	{
-		return -1;
-	}
-	for (size_t i = 0; i < len; i++)
-	{
-		if (*p++ != *splitStr++)
-		{
-			return 0;
-		}
-	}
-	return 1;
-}
+//int nextIsStr(const char * p, char * splitStr, int  len)
+//{
+//	if (p == NULL || splitStr == NULL)
+//	{
+//		return -1;
+//	}
+//	for (size_t i = 0; i < len; i++)
+//	{
+//		if (*p++ != *splitStr++)
+//		{
+//			return 0;
+//		}
+//	}
+//	return 1;
+//}
 
 int split_str(const char *p, char ***res, int *len, char * splitStr)
 {
@@ -79,7 +79,7 @@ int split_str(const char *p, char ***res, int *len, char * splitStr)
 	for (size_t i = 0; i < *len; i++)
 	{
 		//确定一行长度
-		while (*temp != '\0' && nextIsStr(temp, splitStr, strlen(splitStr)) == 0)
+		while (*temp != '\0' && strstr(temp, splitStr) != temp)
 		{
 			linelen++;
 			temp++;
@@ -88,7 +88,7 @@ int split_str(const char *p, char ***res, int *len, char * splitStr)
 		temp -= (linelen-1);
 		//分配一行的内存
 		arr[i] = malloc(sizeof(char)*linelen);
-		while (*temp != '\0' && nextIsStr(temp, splitStr, strlen(splitStr)) == 0)
+		while (*temp != '\0' && strstr(temp, splitStr) != temp)
 		{
 			arr[i][j++] = *temp;
 			temp++;
