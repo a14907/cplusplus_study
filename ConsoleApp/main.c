@@ -4,57 +4,29 @@
 #include <ctype.h>
 #include "main.h"
 
-int countStr(char *p, int *len, int *maxSize, char * splitStr)
+int countStr(char *p, int *len, char * splitStr)
 {
-	if (p == NULL || len == NULL || maxSize == NULL)
+	if (p == NULL || len == NULL )
 	{
 		return -1;
 	}
-	*maxSize = 1;
 	char *temp = NULL;
-	char *preTemp = p;
 	temp = strstr(p, splitStr);
 	int length = 1;
 	do
 	{
 		if (temp == NULL)
 		{
-			if (*maxSize < ((p + strlen(p)) - preTemp))
-			{
-				*maxSize = (p + strlen(p)) - preTemp;
-			}
-		}
-		else if (*maxSize < (temp - preTemp))
-		{
-			*maxSize = temp - preTemp;
-		}
-		if (temp == NULL)
-		{
 			*len = length;
 			return 0;
 		}
 		temp += strlen(splitStr);
-		preTemp = temp;
 		temp = strstr(temp, splitStr);
 		length++;
 	} while (1);
 	return 0;
 }
 
-int getareaarray(char ***str, int count, int size)
-{
-	if (str == NULL)
-	{
-		return -1;
-	}
-	char **p = (char**)malloc(sizeof(char*)*count);
-	for (size_t i = 0; i < count; i++)
-	{
-		p[i] = malloc(sizeof(char)*(size + 1));
-	}
-	*str = p;
-	return 0;
-}
 
 int freestrarray(char ***str, int num)
 {
@@ -98,21 +70,32 @@ int split_str(const char *p, char ***res, int *len, char * splitStr)
 	char *temp = p;
 	//1.获取有多少段,and the max size
 	int maxsize = 0;
-	countStr(p, len, &maxsize, splitStr);
+	countStr(p, len, splitStr);
 	//2.分配内存
-	char **arr = NULL;
-	getareaarray(&arr, *len, maxsize);
+	char **arr = malloc(sizeof(char*) * *len);
 	//3.复制内容
 	int j = 0;
+	int linelen = 1;//长度是1，因为至少有一个结束标识\0
 	for (size_t i = 0; i < *len; i++)
 	{
+		//确定一行长度
+		while (*temp != '\0' && nextIsStr(temp, splitStr, strlen(splitStr)) == 0)
+		{
+			linelen++;
+			temp++;
+		}
+		//统计结束后还原指针位置
+		temp -= (linelen-1);
+		//分配一行的内存
+		arr[i] = malloc(sizeof(char)*linelen);
 		while (*temp != '\0' && nextIsStr(temp, splitStr, strlen(splitStr)) == 0)
 		{
 			arr[i][j++] = *temp;
 			temp++;
 		}
 		arr[i][j] = '\0';
-		j = 0;
+		j = 0; 
+		linelen = 1;
 		temp += strlen(splitStr);
 	}
 	*res = arr;
@@ -197,7 +180,7 @@ int main()
 	char *p = "111aa222aa333aa444aa";
 	char *newstr = NULL;
 	int count = 0;
-	findAndReplaceStr(p, "111", "---", &count, &newstr);
+	findAndReplaceStr(p, "aa", "---", &count, &newstr);
 
 	printf("newstr:%s\ntimes:%d\n", newstr, count);
 
