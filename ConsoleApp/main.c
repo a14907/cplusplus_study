@@ -37,6 +37,10 @@ int freestrarray(char ***str, int num)
 	char **temp = *str;
 	for (size_t i = 0; i < num; i++)
 	{
+		if (*(temp+i)==NULL)
+		{
+			continue;
+		}
 		free(*(temp + i));
 	}
 	free(*str);
@@ -44,22 +48,6 @@ int freestrarray(char ***str, int num)
 	return 0;
 }
 
-//1表示是，0表示否，-1表示出错
-//int nextIsStr(const char * p, char * splitStr, int  len)
-//{
-//	if (p == NULL || splitStr == NULL)
-//	{
-//		return -1;
-//	}
-//	for (size_t i = 0; i < len; i++)
-//	{
-//		if (*p++ != *splitStr++)
-//		{
-//			return 0;
-//		}
-//	}
-//	return 1;
-//}
 
 int split_str(const char *p, char ***res, int *len, char * splitStr)
 {
@@ -72,7 +60,12 @@ int split_str(const char *p, char ***res, int *len, char * splitStr)
 	int maxsize = 0;
 	countStr(p, len, splitStr);
 	//2.分配内存
-	char **arr = malloc(sizeof(char*) * *len);
+	char **arr = malloc(sizeof(char*) * *len);//这里有个问题,为了负责最好把分配的内存全部设置为0,可能分配不到内存，也需要判断
+	if (arr==NULL)
+	{
+		//....
+	}
+	memset(arr,0, sizeof(char*) * *len);
 	//3.复制内容
 	int j = 0;
 	int linelen = 1;//长度是1，因为至少有一个结束标识\0
@@ -87,7 +80,7 @@ int split_str(const char *p, char ***res, int *len, char * splitStr)
 		//统计结束后还原指针位置
 		temp -= (linelen-1);
 		//分配一行的内存
-		arr[i] = malloc(sizeof(char)*linelen);
+		arr[i] = malloc(sizeof(char)*linelen);//可能分配不到内存，也需要判断
 		while (*temp != '\0' && strstr(temp, splitStr) != temp)
 		{
 			arr[i][j++] = *temp;
