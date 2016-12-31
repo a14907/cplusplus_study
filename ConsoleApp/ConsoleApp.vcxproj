@@ -138,11 +138,13 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="cfgOpt.c" />
+    <ClCompile Include="des.c" />
+    <ClCompile Include="desFile.c" />
     <ClCompile Include="main.c" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="ctfOpt.h" />
+    <ClInclude Include="des.h" />
+    <ClInclude Include="desFile.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

@@ -18,12 +18,18 @@
     <ClCompile Include="main.c">
       <Filter>源文件</Filter>
     </ClCompile>
-    <ClCompile Include="cfgOpt.c">
+    <ClCompile Include="des.c">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="desFile.c">
       <Filter>源文件</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="ctfOpt.h">
+    <ClInclude Include="des.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="desFile.h">
       <Filter>头文件</Filter>
     </ClInclude>
   </ItemGroup>
