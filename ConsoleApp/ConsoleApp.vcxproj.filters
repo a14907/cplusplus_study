@@ -18,9 +18,12 @@
     <ClCompile Include="main.c">
       <Filter>源文件</Filter>
     </ClCompile>
+    <ClCompile Include="cfgOpt.c">
+      <Filter>源文件</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="main.h">
+    <ClInclude Include="ctfOpt.h">
       <Filter>头文件</Filter>
     </ClInclude>
   </ItemGroup>

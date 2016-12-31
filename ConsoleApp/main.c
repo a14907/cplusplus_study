@@ -2,186 +2,63 @@
 #include <stdlib.h>
 #include <string.h>
 #include <ctype.h>
-#include "main.h"
+#include "ctfOpt.h"
 
-int countStr(char *p, int *len, char * splitStr)
+void printMenu()
 {
-	if (p == NULL || len == NULL )
-	{
-		return -1;
-	}
-	char *temp = NULL;
-	temp = strstr(p, splitStr);
-	int length = 1;
-	do
-	{
-		if (temp == NULL)
-		{
-			*len = length;
-			return 0;
-		}
-		temp += strlen(splitStr);
-		temp = strstr(temp, splitStr);
-		length++;
-	} while (1);
-	return 0;
-}
-
-
-int freestrarray(char ***str, int num)
-{
-	if (str == NULL)
-	{
-		return -1;
-	}
-	char **temp = *str;
-	for (size_t i = 0; i < num; i++)
-	{
-		if (*(temp+i)==NULL)
-		{
-			continue;
-		}
-		free(*(temp + i));
-	}
-	free(*str);
-	*str = NULL;
-	return 0;
-}
-
-
-int split_str(const char *p, char ***res, int *len, char * splitStr)
-{
-	if (p == NULL || res == NULL || len == NULL)
-	{
-		return -1;
-	}
-	char *temp = p;
-	//1.获取有多少段,and the max size
-	int maxsize = 0;
-	countStr(p, len, splitStr);
-	//2.分配内存
-	char **arr = malloc(sizeof(char*) * *len);//这里有个问题,为了负责最好把分配的内存全部设置为0,可能分配不到内存，也需要判断
-	if (arr==NULL)
-	{
-		//....
-	}
-	memset(arr,0, sizeof(char*) * *len);
-	//3.复制内容
-	int j = 0;
-	int linelen = 1;//长度是1，因为至少有一个结束标识\0
-	for (size_t i = 0; i < *len; i++)
-	{
-		//确定一行长度
-		while (*temp != '\0' && strstr(temp, splitStr) != temp)
-		{
-			linelen++;
-			temp++;
-		}
-		//统计结束后还原指针位置
-		temp -= (linelen-1);
-		//分配一行的内存
-		arr[i] = malloc(sizeof(char)*linelen);//可能分配不到内存，也需要判断
-		while (*temp != '\0' && strstr(temp, splitStr) != temp)
-		{
-			arr[i][j++] = *temp;
-			temp++;
-		}
-		arr[i][j] = '\0';
-		j = 0; 
-		linelen = 1;
-		temp += strlen(splitStr);
-	}
-	*res = arr;
-
-	return 0;
-}
-
-int print_arr_atr(char **arr, int len)
-{
-	if (arr == NULL)
-	{
-		return -1;
-	}
-	for (size_t i = 0; i < len; i++)
-	{
-		printf("%s\n", arr[i]);
-	}
-}
-
-int countTimesInStr(const char * oldstr, const char * findStr, int * count)
-{
-	if (oldstr == NULL || findStr == NULL || count == NULL)
-	{
-		return -1;
-	}
-	int i = 0;
-	while (oldstr = strstr(oldstr, findStr))
-	{
-		i++;
-		oldstr += strlen(findStr);
-	}
-	*count = i;
-
-	return 0;
-}
-
-int findAndReplaceStr(const char *oldstr, const char * findStr, const char *replacestr, int *count, char **newstr)
-{
-	if (oldstr == NULL || replacestr == NULL || count == NULL || newstr == NULL)
-	{
-		return -1;
-	}
-	//1.统计出现次数
-	if (countTimesInStr(oldstr, findStr, count) != 0)
-	{
-		return -1;
-	}
-	//2.分配内存
-	char *tempStr = malloc(1 + sizeof(char)*(strlen(oldstr) + (strlen(replacestr) - strlen(findStr))* *count));
-	char *ttstr = tempStr;
-
-	//3.复制数据
-	int splen = 0;
-	char **strarr = NULL;
-	if (split_str(oldstr, &strarr, &splen, findStr) == -1)
-	{
-		return -1;
-	}
-	for (size_t i = 0; i < splen; i++)
-	{
-		strncpy(ttstr, strarr[i], strlen(strarr[i]));//拷贝第一段
-		ttstr += strlen(strarr[i]);
-		if (i == (splen - 1))
-		{
-			break;
-		}
-		//拷贝替换字符串
-		strncpy(ttstr, replacestr, strlen(replacestr));//拷贝第一段
-		ttstr += strlen(replacestr);
-	}
-	//添加结束表示
-	*ttstr = '\0';
-
-	*newstr = tempStr;
-	freestrarray(&strarr, splen);
-
-	return 0;
+	printf("==========================\n");
+	printf("请选择操作：\n");
+	printf("1.写入配置\n");
+	printf("2.读取配置\n");
+	printf("0.退出\n");
+	printf("请选择：");
+	printf("==========================\n");
 }
 
 int main()
 {
-	char *p = "111aa222aa333aa444aa";
-	char *newstr = NULL;
-	int count = 0;
-	findAndReplaceStr(p, "aa", "---", &count, &newstr);
-
-	printf("newstr:%s\ntimes:%d\n", newstr, count);
-
-	if (newstr != NULL)
+	int opt = 0, res = 0;
+	char key[100] = { 0 }, value[100] = {0};
+	char *fileName = "./cfgfile.cfg";
+	while (1)
 	{
-		free(newstr);
-		newstr = NULL;
+		printMenu();
+		scanf("%d", &opt);
+		switch (opt)
+		{
+		case 1:
+			printf("请输入key:");
+			scanf("%s",key);
+			printf("\n请输入value:");
+			scanf("%s", value);
+			res=writeCfgItem(fileName,key,value);
+			if (res!=0)
+			{
+				printf("写入出错！\n");
+			}
+			else
+			{
+				printf("写入成功！%s=%s\n",key,value);
+			}
+			break;
+		case 2:
+			printf("请输入key:");
+			scanf("%s", key);
+			res = readCfgItem(fileName, key, value);
+			if (res != 0)
+			{
+				printf("读取出错！\n");
+			}
+			else
+			{
+				printf("读取成功！%s=%s\n", key, value);
+			}
+			break;
+		case 0:
+		default:
+			exit(0);
+			break;
+		}
 	}
-
 	return 0;
 }
